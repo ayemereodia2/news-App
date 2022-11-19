@@ -73,11 +73,6 @@ class ArticleViewModel {
     }
     
     private func getAllArticles() {
-//        if !checkifArticlesExist() {
-//            loadArticlesToView(with: 0)
-//            return
-//        }
-
         delegate?.showLoadingView()
         api.loadAllFromApi { [weak self] error in
             guard let _ = error else {

@@ -44,19 +44,13 @@ class MainViewController: UIViewController {
     
     @IBAction func starButtonPressed() {
         viewModel.onLikeArticle(article: likedArticle, index: index)
-        if !favButton.isSelected {
-            favButton.isSelected = true
-            favButton.setBackgroundImage(UIImage(named: "favourite-on"), for: .selected)
-        } else {
-            favButton.isSelected = false
-            favButton.setBackgroundImage(UIImage(named: "favourite-off"), for: .normal)
-        }
+        configureButton(!favButton.isSelected)
     }
 }
 
 
 extension MainViewController: ArticleLoadedDelegate {
-    func onLikedButtonTap(status: Bool) {
+     func configureButton(_ status: Bool) {
         if status {
             favButton.isSelected = true
             favButton.setBackgroundImage(UIImage(named: "favourite-on"), for: .selected)
@@ -64,7 +58,10 @@ extension MainViewController: ArticleLoadedDelegate {
             favButton.setBackgroundImage(UIImage(named: "favourite-off"), for: .normal)
             favButton.isSelected = false
         }
-        
+    }
+    
+    func onLikedButtonTap(status: Bool) {
+        configureButton(status)
     }
     
     func showFirstArticle(article: Article) {
