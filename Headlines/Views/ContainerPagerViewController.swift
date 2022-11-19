@@ -17,6 +17,9 @@ class ContainerPagerViewController: UIViewController, UIPageViewControllerDataSo
         return activityView
     }()
     
+    private var indexMax = 0
+    private var pageCount = 0
+    
     private let viewModel:ArticleViewModel
     
     init(viewModel: ArticleViewModel) {
@@ -49,11 +52,8 @@ class ContainerPagerViewController: UIViewController, UIPageViewControllerDataSo
         viewModel.intialLoad { }
     }
     
-    func loadViewControllers() {
-        for tag in 0..<viewModel.pageCount {
-            let vc = MainViewController(viewModel: viewModel, index: tag)
-            controllers.append(vc)
-        }
+    func loadPageCount() {
+        pageCount = viewModel.pageCount
     }
     
     fileprivate func setupPagerLayout() {
@@ -61,29 +61,30 @@ class ContainerPagerViewController: UIViewController, UIPageViewControllerDataSo
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pageController]|", options: [], metrics: nil, views: views))
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pageController]|", options: [], metrics: nil, views: views))
     }
+    
+    private func GenerateArticlePage(with indexTag: Int) -> MainViewController? {
+        // Create a new view controller and pass suitable data.
+        let vc = MainViewController(viewModel: viewModel, index: indexTag)
+        return vc
+    }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        if let index = controllers.firstIndex(of: viewController) {
-            if index > 0 {
-                return controllers[index - 1]
-            } else {
-                return nil
-            }
+        indexMax -= 1
+        
+        if indexMax >= 0 {
+            return GenerateArticlePage(with: indexMax)
+        } else {
+            return nil
         }
-
-        return nil
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        if let index = controllers.firstIndex(of: viewController) {
-            if index < controllers.count - 1 {
-                return controllers[index + 1]
-            } else {
-                return nil
-            }
+        indexMax += 1
+        if indexMax <= pageCount {
+            return GenerateArticlePage(with: indexMax)
+        } else {
+            return nil
         }
-
-        return nil
     }
 }
 
@@ -91,8 +92,8 @@ class ContainerPagerViewController: UIViewController, UIPageViewControllerDataSo
 extension ContainerPagerViewController: ArticleLoadedDelegate {
     func hideLoadingView() {
         hideActivityIndicator()
-        loadViewControllers()
-        pageController.setViewControllers([self.controllers[0]], direction: .forward, animated: false)
+        loadPageCount()
+        pageController.setViewControllers([GenerateArticlePage(with: indexMax)!], direction: .forward, animated: false)
     }
 
     func showLoadingView() {
