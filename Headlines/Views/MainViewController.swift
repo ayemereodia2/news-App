@@ -17,7 +17,7 @@ class MainViewController: UIViewController {
     private var likedArticle:Article!
     @IBOutlet weak var favListButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-
+    var toggle = false
     private let viewModel:ArticleViewModel
     private let index: Int
     
@@ -45,6 +45,20 @@ class MainViewController: UIViewController {
     @IBAction func starButtonPressed() {
         viewModel.onLikeArticle(article: likedArticle, index: index)
         configureButton(!favButton.isSelected)
+    }
+    
+    func toggleViewModes() {
+        toggle = !toggle
+        if toggle {
+            UIApplication.shared.windows.forEach { window in
+                window.overrideUserInterfaceStyle = .dark
+            }
+        } else {
+            UIApplication.shared.windows.forEach { window in
+                window.overrideUserInterfaceStyle = .light
+            }
+        }
+        
     }
 }
 
